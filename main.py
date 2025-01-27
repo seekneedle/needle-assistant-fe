@@ -4,8 +4,8 @@ from requests.auth import HTTPBasicAuth
 import json
 
 # 定义API的URL和认证信息
-API_URL = "http://127.0.0.1:8510/assistant/trainer"
-SCORE_API_URL = "http://127.0.0.1:8510/assistant/trainer_score"
+API_URL = "http://8.152.213.191:8510/assistant/trainer"
+SCORE_API_URL = "http://8.152.213.191:8510/assistant/trainer_score"
 AUTH = HTTPBasicAuth('needle_assistant', 'needle_assistant')
 
 # 初始化session state
