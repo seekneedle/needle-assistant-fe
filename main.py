@@ -4,7 +4,8 @@ from requests.auth import HTTPBasicAuth
 import json
 
 # 定义API的URL和认证信息
-API_URL = "http://8.152.213.191:8510/assistant/trainer"
+API_URL = "http://127.0.0.1:8510/assistant/trainer"
+SCORE_API_URL = "http://127.0.0.1:8510/assistant/trainer_score"
 AUTH = HTTPBasicAuth('needle_assistant', 'needle_assistant')
 
 # 初始化session state
@@ -16,7 +17,7 @@ if 'scored' not in st.session_state:
     st.session_state.scored = False
 
 # 标题
-st.title("众信旅行助手")
+st.title("Trainer")
 
 # 选择role
 role = st.selectbox("选择角色", ["easy", "medium", "hard"], index=["easy", "medium", "hard"].index(st.session_state.role))
@@ -47,7 +48,7 @@ else:
             "messages": st.session_state.messages,
             "role": st.session_state.role
         }
-        response = requests.post(API_URL, json=data, auth=AUTH, stream=True)
+        response = requests.post(API_URL, json=data, auth=AUTH)
 
         # 处理流式响应
         assistant_response = ""
@@ -67,16 +68,25 @@ else:
 # 评分按钮
 if st.button("评分") and not st.session_state.scored:
     # 这里假设评分接口是另一个API，你可以根据实际情况修改
-    score_response = requests.post("评分接口URL", auth=AUTH)
-    if score_response.status_code == 200:
-        score_data = score_response.json()
-        st.success(f"评分结果: {score_data['score']}")
-        st.session_state.scored = True
-    else:
-        st.error("评分失败")
+    data = {
+        "messages": st.session_state.messages
+    }
+    score_response = requests.post(SCORE_API_URL, auth=AUTH, json=data)
+    assistant_response = ""
+
+    for line in score_response.iter_lines():
+        if line:
+            decoded_line = line.decode('utf-8')
+            if decoded_line.startswith("data:"):
+                json_data = json.loads(decoded_line[5:])
+                if json_data["code"] == 200 and json_data["status"] == "success":
+                    assistant_response += json_data["data"]["content"]
+
+    st.success(f"评分结果: {assistant_response}")
+    st.session_state.scored = True
 
 # 清除聊天历史按钮
 if st.button("清除聊天历史"):
     st.session_state.messages = []
     st.session_state.scored = False
-    st.experimental_rerun()
+    st.rerun()
