@@ -1,9 +1,9 @@
 environments:
-  uat:
-    api_url: "http://8.152.213.191:8510/assistant/trainer"
-    score_api_url: "http://8.152.213.191:8510/assistant/trainer_score"
   prod:
-    api_url: "localhost:8501/assistant/trainer"
-    score_api_url: "localhost:8501/assistant/trainer_score"
+    api_url: "http://8.152.213.191:8501/assistant/trainer"
+    score_api_url: "http://8.152.213.191:8501/assistant/trainer_score"
+  uat:
+    api_url: "http://localhost:8510/assistant/trainer"
+    score_api_url: "http://localhost:8510/assistant/trainer_score"
 
 default_environment: "uat"

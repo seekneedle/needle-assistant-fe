@@ -4,6 +4,27 @@ import streamlit as st
 import requests
 from requests.auth import HTTPBasicAuth
 import json
+import logging
+import sys
+
+# Create a custom handler that writes to stderr
+class StderrHandler(logging.StreamHandler):
+    def __init__(self):
+        super().__init__(sys.stderr)
+
+    def format(self, record):
+        # Customize the log format if needed
+        return f"{record.levelname}: {record.getMessage()}"
+
+# Configure logging
+logger = logging.getLogger(__name__)
+logger.handlers.clear()
+logger.setLevel(logging.INFO)
+
+# Add the custom handler
+handler = StderrHandler()
+logger.addHandler(handler)
+logger.propagate = False
 
 # 定义API的URL和认证信息
 # Load configuration
@@ -100,8 +121,9 @@ else:
             "messages": st.session_state.messages,
             "role": st.session_state.role
         }
+        logger.info("sending " + str(data) + "to " + API_URL)
         response = requests.post(API_URL, json=data, auth=AUTH)
-
+        logger.info(str(response))
         # 处理流式响应
         assistant_response = ""
         with st.chat_message("assistant"):
