@@ -84,7 +84,8 @@ with col2:
                     if json_data["code"] == 200 and json_data["status"] == "success":
                         assistant_response += json_data["data"]["content"]
 
-        st.success(f"评分结果: {assistant_response}")
+        
+        #st.success(f"评分结果: {assistant_response}")
         st.session_state.scored = True
 
 # 清除聊天历史按钮
@@ -94,6 +95,10 @@ with col3:
         st.session_state.messages = []
         st.session_state.scored = False
         st.rerun()
+
+# 显示评分结果
+if 'assistant_response' in locals() and st.session_state.scored == True:
+    st.success(f"评分结果: {assistant_response}")
 
 # 如果role发生变化，清除聊天历史
 if role != st.session_state.role:
